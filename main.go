@@ -5,7 +5,7 @@ import (
 	"net/http"
 )
 
-func handlerFunc(w http.ResponseWriter, r *http.Request) {
+func homeHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	fmt.Fprint(w, "<h1>Hello, World! This is my first Awesome and Great Go web app!</h1>")
 }
@@ -16,7 +16,7 @@ func contactHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	http.HandleFunc("/", handlerFunc)
+	http.HandleFunc("/", homeHandler)
 	http.HandleFunc("/contact", contactHandler)
 	fmt.Println("Server is running on port 3000")
 	http.ListenAndServe(":3000", nil)
