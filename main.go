@@ -25,6 +25,7 @@ func pathHandler(w http.ResponseWriter, r *http.Request) {
 	default:
 		w.WriteHeader(http.StatusNotFound)
 		fmt.Fprint(w, "<h1>404 Page Not Found</h1><p>Sorry, but the page you were trying to view does not exist.</p>")
+		http.Error(w, "404 Page Not Found", http.StatusNotFound)
 	}
 }
 
