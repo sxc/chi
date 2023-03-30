@@ -30,8 +30,23 @@ func pathHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	var router Router
 	http.HandleFunc("/", pathHandler)
-	// http.HandleFunc("/contact", contactHandler)
 	fmt.Println("Server is running on port 3000")
-	http.ListenAndServe(":3000", nil)
+	http.ListenAndServe(":3000", router)
+}
+
+type Router struct{}
+
+func (router Router) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	switch r.URL.Path {
+	case "/":
+		homeHandler(w, r)
+	case "/contact":
+		contactHandler(w, r)
+	default:
+		w.WriteHeader(http.StatusNotFound)
+		fmt.Fprint(w, "<h1>404 Page Not Found</h1><p>Sorry, but the page you were trying to view does not exist.</p>")
+		http.Error(w, "404 Page Not Found", http.StatusNotFound)
+	}
 }
