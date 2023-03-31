@@ -28,10 +28,10 @@ func pathHandler(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	var router Router
-	http.HandleFunc("/", homeHandler)
-	http.HandleFunc("/contact", contactHandler)
+	// http.HandleFunc("/", homeHandler)
+	// http.HandleFunc("/contact", contactHandler)
 	fmt.Println("Server is running on port 3000")
-	http.ListenAndServe(":3000", nil)
+	http.ListenAndServe(":3000", router)
 }
 
 type Router struct{}
