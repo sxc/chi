@@ -8,7 +8,6 @@ import (
 func homeHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	fmt.Fprint(w, "<h1>Hello, World! This is my first Awesome and Great Go web app!</h1>")
-	// fmt.Fprint(w, r.URL.Path)
 }
 
 func contactHandler(w http.ResponseWriter, r *http.Request) {
@@ -23,8 +22,6 @@ func contactHandler(w http.ResponseWriter, r *http.Request) {
 // 	case "/contact":
 // 		contactHandler(w, r)
 // 	default:
-// 		// w.WriteHeader(http.StatusNotFound)
-// 		// fmt.Fprint(w, "<h1>404 Page Not Found</h1><p>Sorry, but the page you were trying to view does not exist.</p>")
 // 		http.Error(w, "404 Page Not Found", http.StatusNotFound)
 // 	}
 // }
@@ -45,8 +42,6 @@ func (router Router) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	case "/contact":
 		contactHandler(w, r)
 	default:
-		// w.WriteHeader(http.StatusNotFound)
-		// fmt.Fprint(w, "<h1>404 Page Not Found</h1><p>Sorry, but the page you were trying to view does not exist.</p>")
 		http.Error(w, "404 Page Not Found", http.StatusNotFound)
 	}
 }
