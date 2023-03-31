@@ -1,4 +1,4 @@
-module chi
+module github.com/sxc/chi
 
 go 1.20
 
