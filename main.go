@@ -17,7 +17,7 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Internal server error", http.StatusInternalServerError)
 		return
 	}
-	err = tpl.Execute(w, "a string")
+	err = tpl.Execute(w, nil)
 	if err != nil {
 		log.Printf("executing template: %v", err)
 		http.Error(w, "Internal server error executing the template.", http.StatusInternalServerError)
@@ -26,7 +26,17 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 
 func contactHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	fmt.Fprint(w, "<h1>Contact Page</h1><p>To get in touch, please send an email to <a href=\"mailto:abc@example.com\">Email</a>.</p>")
+	tpl, err := template.ParseFiles("templates/contact.gohtml")
+	if err != nil {
+		log.Printf("parsing template: %v", err)
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
+	err = tpl.Execute(w, nil)
+	if err != nil {
+		log.Printf("executing template: %v", err)
+		http.Error(w, "Internal server error executing the template.", http.StatusInternalServerError)
+	}
 }
 
 func faqHandler(w http.ResponseWriter, r *http.Request) {
