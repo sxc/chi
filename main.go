@@ -7,20 +7,8 @@ import (
 	"path/filepath"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/sxc/oishifood/views"
 )
-
-// "fmt"
-// "html/template"
-// "log"
-// "net/http"
-// "path/filepath"
-
-// "github.com/go-chi/chi/v5"
-// "fmt"
-// "log"
-// "net/http"
-// "path/filepath"
-// "text/template"
 
 // func homeHandler(w http.ResponseWriter, r *http.Request) {
 // 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
@@ -38,7 +26,7 @@ import (
 // }
 
 func executeTemplate(w http.ResponseWriter, filepath string) {
-	// t, err := views.Parse(filepath)
+	t, err := views.Parse(filepath)
 	if err != nil {
 		log.Printf("parsing template: %v", err)
 		http.Error(w, "Internal server error", http.StatusInternalServerError)
