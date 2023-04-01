@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/sxc/oishifood/controllers"
 	"github.com/sxc/oishifood/views"
 )
 
@@ -49,27 +50,27 @@ func faqHandler(w http.ResponseWriter, r *http.Request) {
 	executeTemplate(w, filepath.Join("templates", "faq.gohtml"))
 }
 
-// func executeTemplate(w http.ResponseWriter, filepath string) {
-// 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-// 	tpl, err := template.ParseFiles(filepath)
-// 	if err != nil {
-// 		log.Printf("executing template: %v", err)
-// 		http.Error(w, "Internal server error executing the template.", http.StatusInternalServerError)
-// 		return
-// 	}
-// 	err = tpl.Execute(w, nil)
-// 	if err != nil {
-// 		log.Printf("executing template: %v", err)
-// 		http.Error(w, "Internal server error executing the template.", http.StatusInternalServerError)
-// 		return
-// 	}
-// }
-
 func main() {
 	r := chi.NewRouter()
-	r.Get("/", homeHandler)
-	r.Get("/contact", contactHandler)
-	r.Get("/faq", faqHandler)
+
+	tpl, err := views.Parse("templates/home.gohtml")
+	if err != nil {
+		panic(err)
+	}
+	r.Get("/", controllers.StaticHandler(tpl))
+
+	tpl, err = views.Parse("templates/contact.gohtml")
+	if err != nil {
+		panic(err)
+	}
+	r.Get("/contact", controllers.StaticHandler(tpl))
+
+	tpl, err = views.Parse("templates/faq.gohtml")
+	if err != nil {
+		panic(err)
+	}
+	r.Get("/faq", controllers.StaticHandler(tpl))
+
 	r.NotFound(func(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "404 Page Not Found", http.StatusNotFound)
 	})
