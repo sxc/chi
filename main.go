@@ -6,8 +6,7 @@ import (
 	"net/http"
 	"path/filepath"
 
-	"github.com/go-chi/chi"
-	"github.com/sxc/chi/views"
+	"github.com/go-chi/chi/v5"
 )
 
 // "fmt"
@@ -39,7 +38,7 @@ import (
 // }
 
 func executeTemplate(w http.ResponseWriter, filepath string) {
-	t, err := views.Parse(filepath)
+	// t, err := views.Parse(filepath)
 	if err != nil {
 		log.Printf("parsing template: %v", err)
 		http.Error(w, "Internal server error", http.StatusInternalServerError)
