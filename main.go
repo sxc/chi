@@ -44,7 +44,8 @@ func main() {
 	// 	panic(err)
 	// }
 	// r.Get("/", controllers.StaticHandler(tpl))
-	r.Get("/", controllers.StaticHandler(views.Must(views.ParseFS(templates.FS, "home.gohtml"))))
+	r.Get("/", controllers.StaticHandler(views.Must(
+		views.ParseFS(templates.FS, "home.gohtml", "layout.gohtml"))))
 	r.Get("/contact", controllers.StaticHandler(views.Must(views.ParseFS(templates.FS, "contact.gohtml"))))
 	// r.Get("/faq", controllers.StaticHandler(views.Must(views.ParseFS(templates.FS, "faq.gohtml"))))
 	r.Get("/faq", controllers.FAQ(views.Must(views.ParseFS(templates.FS, "faq.gohtml"))))
