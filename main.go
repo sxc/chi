@@ -48,18 +48,6 @@ func main() {
 	r.Get("/contact", controllers.StaticHandler(views.Must(views.ParseFS(templates.FS, "contact.gohtml"))))
 	r.Get("/faq", controllers.StaticHandler(views.Must(views.ParseFS(templates.FS, "faq.gohtml"))))
 
-	// tpl, err = views.Parse("templates/contact.gohtml")
-	// if err != nil {
-	// 	panic(err)
-	// }
-	// r.Get("/contact", controllers.StaticHandler(tpl))
-
-	// tpl, err = views.Parse("templates/faq.gohtml")
-	// if err != nil {
-	// 	panic(err)
-	// }
-	// r.Get("/faq", controllers.StaticHandler(tpl))
-
 	r.NotFound(func(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "404 Page Not Found", http.StatusNotFound)
 	})
