@@ -8,23 +8,9 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/sxc/oishifood/controllers"
+	"github.com/sxc/oishifood/templates"
 	"github.com/sxc/oishifood/views"
 )
-
-// func homeHandler(w http.ResponseWriter, r *http.Request) {
-// 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-// 	tpl, err := template.ParseFiles("templates/home.gohtml")
-// 	if err != nil {
-// 		log.Printf("parsing template: %v", err)
-// 		http.Error(w, "Internal server error", http.StatusInternalServerError)
-// 		return
-// 	}
-// 	err = tpl.Execute(w, nil)
-// 	if err != nil {
-// 		log.Printf("executing template: %v", err)
-// 		http.Error(w, "Internal server error executing the template.", http.StatusInternalServerError)
-// 	}
-// }
 
 func executeTemplate(w http.ResponseWriter, filepath string) {
 	t, err := views.Parse(filepath)
@@ -53,23 +39,26 @@ func faqHandler(w http.ResponseWriter, r *http.Request) {
 func main() {
 	r := chi.NewRouter()
 
-	tpl, err := views.Parse("templates/home.gohtml")
-	if err != nil {
-		panic(err)
-	}
-	r.Get("/", controllers.StaticHandler(tpl))
+	// tpl, err := views.Parse("templates/home.gohtml")
+	// if err != nil {
+	// 	panic(err)
+	// }
+	// r.Get("/", controllers.StaticHandler(tpl))
+	r.Get("/", controllers.StaticHandler(views.Must(views.ParseFS(templates.FS, "home.gohtml"))))
+	r.Get("/contact", controllers.StaticHandler(views.Must(views.ParseFS(templates.FS, "contact.gohtml"))))
+	r.Get("/faq", controllers.StaticHandler(views.Must(views.ParseFS(templates.FS, "faq.gohtml"))))
 
-	tpl, err = views.Parse("templates/contact.gohtml")
-	if err != nil {
-		panic(err)
-	}
-	r.Get("/contact", controllers.StaticHandler(tpl))
+	// tpl, err = views.Parse("templates/contact.gohtml")
+	// if err != nil {
+	// 	panic(err)
+	// }
+	// r.Get("/contact", controllers.StaticHandler(tpl))
 
-	tpl, err = views.Parse("templates/faq.gohtml")
-	if err != nil {
-		panic(err)
-	}
-	r.Get("/faq", controllers.StaticHandler(tpl))
+	// tpl, err = views.Parse("templates/faq.gohtml")
+	// if err != nil {
+	// 	panic(err)
+	// }
+	// r.Get("/faq", controllers.StaticHandler(tpl))
 
 	r.NotFound(func(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "404 Page Not Found", http.StatusNotFound)
