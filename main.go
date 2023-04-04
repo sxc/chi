@@ -21,20 +21,6 @@ func executeTemplate(w http.ResponseWriter, filepath string) {
 	t.Execute(w, nil)
 }
 
-func homeHandler(w http.ResponseWriter, r *http.Request) {
-	tplPath := filepath.Join("templates", "home.gohtml")
-	executeTemplate(w, tplPath)
-}
-
-func contactHandler(w http.ResponseWriter, r *http.Request) {
-	tplPath := filepath.Join("templates", "contact.gohtml")
-	executeTemplate(w, tplPath)
-}
-
-func faqHandler(w http.ResponseWriter, r *http.Request) {
-	executeTemplate(w, filepath.Join("templates", "faq.gohtml"))
-}
-
 func main() {
 	r := chi.NewRouter()
 
@@ -42,19 +28,20 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+
 	r.Get("/", controllers.StaticHandler(tpl))
 
-	tpl2, err := views.Parse(filepath.Join("templates", "contact.gohtml"))
+	tpl, err = views.Parse(filepath.Join("templates", "contact.gohtml"))
 	if err != nil {
 		panic(err)
 	}
-	r.Get("/contact", controllers.StaticHandler(tpl2))
+	r.Get("/contact", controllers.StaticHandler(tpl))
 
-	tpl3, err := views.Parse(filepath.Join("templates", "faq.gohtml"))
+	tpl, err = views.Parse(filepath.Join("templates", "faq.gohtml"))
 	if err != nil {
 		panic(err)
 	}
-	r.Get("/faq", controllers.StaticHandler(tpl3))
+	r.Get("/faq", controllers.StaticHandler(tpl))
 
 	r.NotFound(func(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "404 Page Not Found", http.StatusNotFound)
