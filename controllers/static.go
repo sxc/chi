@@ -17,15 +17,14 @@ func (static Static) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 func StaticHandler(tpl views.Template) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		tpl.Execute(w, nil)
+		tpl.Execute(w, r, nil)
 	}
 }
 
 func FAQ(tpl views.Template) http.HandlerFunc {
 	question := []struct {
 		Question string
-		// Answer   string
-		Answer template.HTML
+		Answer   template.HTML
 	}{
 		{
 			Question: "What is Oishi Food?",
