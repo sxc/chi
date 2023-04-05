@@ -39,17 +39,32 @@ func main() {
 	}
 
 	db, err := sql.Open("pgx", cfg.String())
+	fmt.Println("Connected to database")
+
+	// Create a table...
+	_, err = db.Exec(`CREATE TABLE IF NOT EXISTS users (
+		id SERIAL PRIMARY KEY, 
+		name TEXT
+		); 
+
+		CREATE TABLE IF NOT EXISTS orders (
+			id SERIAL PRIMARY KEY, 
+			user_id INT NOT NULL, 
+			amount INT, 
+			description TEXT
+			);
+			`)
+
 	if err != nil {
 		panic(err)
 	}
+	fmt.Println("Created tables")
 	defer db.Close()
 
 	err = db.Ping()
 	if err != nil {
 		panic(err)
 	}
-
-	fmt.Println("Connected to database")
 
 	r := chi.NewRouter()
 
