@@ -8,9 +8,26 @@ import (
 	"github.com/sxc/oishifood/controllers"
 	"github.com/sxc/oishifood/templates"
 	"github.com/sxc/oishifood/views"
+
+	"database/sql"
+
+	_ "github.com/jackc/pgx/v4/stdlib"
 )
 
 func main() {
+	db, err := sql.Open("pgx", "host=localhost port=5432 user=oishifooduser password=oishifoodpassword dbname=oishifooddb sslmode=disable")
+	if err != nil {
+		panic(err)
+	}
+	defer db.Close()
+
+	err = db.Ping()
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println("Connected to database")
+
 	r := chi.NewRouter()
 
 	r.Get("/", controllers.StaticHandler(
