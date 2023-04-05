@@ -3,25 +3,15 @@ package controllers
 import (
 	"html/template"
 	"net/http"
-
-	"github.com/sxc/oishifood/views"
 )
 
-type Static struct {
-	Template views.Template
-}
-
-func (static Static) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	static.Template.Execute(w, nil)
-}
-
-func StaticHandler(tpl views.Template) http.HandlerFunc {
+func StaticHandler(tpl Template) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		tpl.Execute(w, nil)
 	}
 }
 
-func FAQ(tpl views.Template) http.HandlerFunc {
+func FAQ(tpl Template) http.HandlerFunc {
 	question := []struct {
 		Question string
 		Answer   template.HTML
