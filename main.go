@@ -59,6 +59,19 @@ func main() {
 		panic(err)
 	}
 	fmt.Println("Created tables")
+
+	// Insert a row...
+
+	_, err = db.Exec(`INSERT INTO users 
+	(name) 
+	VALUES
+	 ('Jordan');  Insert into orders (user_id, amount, description) 
+	 values (1, 100, 'test');`)
+
+	if err != nil {
+		panic(err)
+	}
+
 	defer db.Close()
 
 	err = db.Ping()
