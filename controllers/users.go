@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/sxc/oishifood/models"
@@ -10,17 +11,18 @@ type Users struct {
 	Templates struct {
 		New Template
 	}
-	UserService models.UserService
+	UserService *models.UserService
 }
 
 func (u Users) New(w http.ResponseWriter, r *http.Request) {
-	u.Templates.New.Execute(w, nil)
+	var data struct {
+		Email string
+	}
+	data.Email = r.FormValue("email")
+	u.Templates.New.Execute(w, data)
 }
 
 func (u Users) Create(w http.ResponseWriter, r *http.Request) {
-	err := r.ParseForm()
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
+	fmt.Fprint(w, "Email: ", r.FormValue("email"))
+	fmt.Fprint(w, "Password: ", r.FormValue("password"))
 }

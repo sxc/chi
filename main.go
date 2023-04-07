@@ -27,15 +27,6 @@ func (cfg PostgresConfig) String() string {
 }
 
 func main() {
-	// cfg := PostgresConfig{
-	// 	Host:     "localhost",
-	// 	Port:     "5432",
-	// 	User:     "oishifooduser",
-	// 	Password: "oishifoodpassword",
-	// 	Database: "oishifooddb",
-	// 	SSLMode:  "disable",
-	// }
-
 	cfg := models.DefaultPostgresConfig()
 	db, err := models.Open(cfg)
 
@@ -68,14 +59,12 @@ func main() {
 	_, err = db.Exec(`INSERT INTO users 
 	(email, password_hash) 
 	VALUES
-	 ('Jordan3@example.com', 'abc123');  Insert into orders (user_id, amount, description) 
+	 ('Jordan333@example.com', 'abc123');  Insert into orders (user_id, amount, description) 
 	 values (1, 100, 'test');`)
 
 	if err != nil {
 		panic(err)
 	}
-
-	defer db.Close()
 
 	err = db.Ping()
 	if err != nil {
@@ -93,11 +82,18 @@ func main() {
 	r.Get("/faq", controllers.StaticHandler(
 		views.Must(views.ParseFS(templates.FS, "faq.gohtml", "tailwind.gohtml"))))
 
-	usersC := controllers.Users{}
+	userService := models.UserService{
+		DB: db,
+	}
+	usersC := controllers.Users{
+		UserService: &userService, // TODO: Create a UserService,
+	}
 	usersC.Templates.New = views.Must(views.ParseFS(templates.FS,
 		"signup.gohtml", "tailwind.gohtml"))
 	r.Get("/signup", usersC.New)
 	r.Get("/users", usersC.Create)
+
+	defer db.Close()
 
 	r.NotFound(func(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "404 Page Not Found", http.StatusNotFound)
