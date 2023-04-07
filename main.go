@@ -68,7 +68,7 @@ func main() {
 	_, err = db.Exec(`INSERT INTO users 
 	(email, password_hash) 
 	VALUES
-	 ('Jordan2@example.com', 'abc123');  Insert into orders (user_id, amount, description) 
+	 ('Jordan3@example.com', 'abc123');  Insert into orders (user_id, amount, description) 
 	 values (1, 100, 'test');`)
 
 	if err != nil {
