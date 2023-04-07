@@ -100,6 +100,7 @@ func main() {
 	r.Get("/signup", usersC.New)
 	r.Get("/users", usersC.Create)
 	r.Get("/signin", usersC.SignIn)
+	r.Post("/signin", usersC.ProcessSignIn)
 
 	defer db.Close()
 
