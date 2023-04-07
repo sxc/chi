@@ -86,16 +86,20 @@ func main() {
 		DB: db,
 	}
 	usersC := controllers.Users{
-		UserService: &userService, // TODO: Create a UserService,
+		UserService: &userService,
 	}
 	usersC.Templates.New = views.Must(views.ParseFS(templates.FS,
 		"signup.gohtml", "tailwind.gohtml"))
+
+	usersC.Templates.SignIn = views.Must(views.ParseFS(templates.FS,
+		"signin.gohtml", "tailwind.gohtml"))
 
 	// usersC.Templates.Create = views.Must(views.ParseFS(templates.FS,
 	// 	"signup.gohtml", "tailwind.gohtml"))
 
 	r.Get("/signup", usersC.New)
 	r.Get("/users", usersC.Create)
+	r.Get("/signin", usersC.SignIn)
 
 	defer db.Close()
 
