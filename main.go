@@ -6,12 +6,10 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/sxc/oishifood/controllers"
+	"github.com/sxc/oishifood/models"
 	"github.com/sxc/oishifood/templates"
 	"github.com/sxc/oishifood/views"
-
-	"database/sql"
-
-	_ "github.com/jackc/pgx/v4/stdlib"
+	// _ "github.com/jackc/pgx/v4/stdlib"
 )
 
 type PostgresConfig struct {
@@ -29,16 +27,21 @@ func (cfg PostgresConfig) String() string {
 }
 
 func main() {
-	cfg := PostgresConfig{
-		Host:     "localhost",
-		Port:     "5432",
-		User:     "oishifooduser",
-		Password: "oishifoodpassword",
-		Database: "oishifooddb",
-		SSLMode:  "disable",
-	}
+	// cfg := PostgresConfig{
+	// 	Host:     "localhost",
+	// 	Port:     "5432",
+	// 	User:     "oishifooduser",
+	// 	Password: "oishifoodpassword",
+	// 	Database: "oishifooddb",
+	// 	SSLMode:  "disable",
+	// }
 
-	db, err := sql.Open("pgx", cfg.String())
+	cfg := models.DefaultPostgresConfig()
+	db, err := models.Open(cfg)
+
+	if err != nil {
+		panic(err)
+	}
 	fmt.Println("Connected to database")
 
 	// Create a table...
@@ -63,9 +66,9 @@ func main() {
 	// Insert a row...
 
 	_, err = db.Exec(`INSERT INTO users 
-	(name) 
+	(email, password_hash) 
 	VALUES
-	 ('Jordan');  Insert into orders (user_id, amount, description) 
+	 ('Jordan2@example.com', 'abc123');  Insert into orders (user_id, amount, description) 
 	 values (1, 100, 'test');`)
 
 	if err != nil {
