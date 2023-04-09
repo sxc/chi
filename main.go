@@ -98,7 +98,7 @@ func main() {
 	// 	"signup.gohtml", "tailwind.gohtml"))
 
 	r.Get("/signup", usersC.New)
-	r.Get("/users", usersC.Create)
+	r.Post("/users", usersC.Create)
 	r.Get("/signin", usersC.SignIn)
 	r.Post("/signin", usersC.ProcessSignIn)
 

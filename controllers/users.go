@@ -24,14 +24,13 @@ func (u Users) New(w http.ResponseWriter, r *http.Request) {
 }
 
 func (u Users) Create(w http.ResponseWriter, r *http.Request) {
-	// err := r.ParseForm()
-	// if err != nil {
-	// 	http.Error(w, "Something went wrong.", http.StatusInternalServerError)
-	// 	return
-	// }
-	fmt.Fprint(w, "Email", r.PostForm.Get("email"))
-	fmt.Fprint(w, "Password", r.PostForm.Get("password"))
-	fmt.Fprint(w, "Test")
+	err := r.ParseForm()
+	if err != nil {
+		http.Error(w, "Unable to parse form submission. Something went wrong.", http.StatusInternalServerError)
+		return
+	}
+	fmt.Fprintf(w, "<p>Email: %s<p>", r.FormValue("email"))
+	fmt.Fprintf(w, "<p>Password: %s</p>", r.FormValue("password"))
 
 	email := r.FormValue("email")
 	password := r.FormValue("password")
@@ -42,6 +41,7 @@ func (u Users) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	fmt.Fprintf(w, "User created: %v", user)
+	fmt.Fprint(w, "Create temporary response")
 }
 
 func (u Users) SignIn(w http.ResponseWriter, r *http.Request) {
