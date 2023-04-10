@@ -27,6 +27,8 @@ import (
 // }
 
 func main() {
+
+	// Setup the database...
 	cfg := models.DefaultPostgresConfig()
 	db, err := models.Open(cfg)
 
@@ -34,25 +36,7 @@ func main() {
 		panic(err)
 	}
 	fmt.Println("Connected to database")
-
-	// Create a table...
-
-	// if err != nil {
-	// 	panic(err)
-	// }
-	// fmt.Println("Created tables")
-
-	// Insert a row...
-
-	// _, err = db.Exec(`INSERT INTO users
-	// (email, password_hash)
-	// VALUES
-	//  ('Jordan333@example.com', 'abc123');  Insert into orders (user_id, amount, description)
-	//  values (1, 100, 'test');`)
-
-	// if err != nil {
-	// 	panic(err)
-	// }
+	defer db.Close()
 
 	err = db.Ping()
 	if err != nil {
@@ -82,15 +66,12 @@ func main() {
 	usersC.Templates.SignIn = views.Must(views.ParseFS(templates.FS,
 		"signin.gohtml", "tailwind.gohtml"))
 
-	// usersC.Templates.Create = views.Must(views.ParseFS(templates.FS,
-	// 	"signup.gohtml", "tailwind.gohtml"))
-
 	r.Get("/signup", usersC.New)
 	r.Post("/users", usersC.Create)
 	r.Get("/signin", usersC.SignIn)
 	r.Post("/signin", usersC.ProcessSignIn)
 
-	defer db.Close()
+	// defer db.Close()
 
 	r.NotFound(func(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "404 Page Not Found not found", http.StatusNotFound)
