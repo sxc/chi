@@ -9,6 +9,8 @@ import (
 	"github.com/sxc/oishifood/models"
 	"github.com/sxc/oishifood/templates"
 	"github.com/sxc/oishifood/views"
+
+	"github.com/gorilla/csrf"
 	// _ "github.com/jackc/pgx/v4/stdlib"
 )
 
@@ -79,5 +81,9 @@ func main() {
 	})
 	fmt.Println("Server is running on port 3000")
 
-	http.ListenAndServe(":3000", r)
+	csrfKey := []byte("very-secret")
+	// TODO: Fix this before deploying to production
+	csrfMiddleware := csrf.Protect(csrfKey, csrf.Secure(false))
+	// r.Use(csrfMiddleware)
+	http.ListenAndServe(":3000", csrfMiddleware(r))
 }
