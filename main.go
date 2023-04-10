@@ -36,18 +36,6 @@ func main() {
 	fmt.Println("Connected to database")
 
 	// Create a table...
-	// _, err = db.Exec(`CREATE TABLE IF NOT EXISTS users (
-	// 	id SERIAL PRIMARY KEY,
-	// 	name TEXT
-	// 	);
-
-	// 	CREATE TABLE IF NOT EXISTS orders (
-	// 		id SERIAL PRIMARY KEY,
-	// 		user_id INT NOT NULL,
-	// 		amount INT,
-	// 		description TEXT
-	// 		);
-	// 		`)
 
 	// if err != nil {
 	// 	panic(err)

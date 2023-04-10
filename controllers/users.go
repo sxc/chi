@@ -41,7 +41,7 @@ func (u Users) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	fmt.Fprintf(w, "User created: %v", user)
-	fmt.Fprint(w, "Create temporary response")
+	// fmt.Fprint(w, "Create temporary response")
 }
 
 func (u Users) SignIn(w http.ResponseWriter, r *http.Request) {
