@@ -8,21 +8,31 @@ import (
 	"net/http"
 )
 
-func Parse(filepath string) (Template, error) {
-	htmlTpl, err := template.ParseFiles(filepath)
-	if err != nil {
-		return Template{}, fmt.Errorf("parsing template: %w", err)
-	}
-	return Template{
-		htmlTpl: htmlTpl,
-	}, nil
-}
+// func Parse(filepath string) (Template, error) {
+// 	htmlTpl, err := template.ParseFiles(filepath)
+// 	if err != nil {
+// 		return Template{}, fmt.Errorf("parsing template: %w", err)
+// 	}
+// 	return Template{
+// 		htmlTpl: htmlTpl,
+// 	}, nil
+// }
 
-func ParseFS(fs fs.FS, pattern ...string) (Template, error) {
-	htmlTpl, err := template.ParseFS(fs, pattern...)
+func ParseFS(fs fs.FS, patterns ...string) (Template, error) {
+	htmlTpl := template.New(patterns[0])
+	htmlTpl = htmlTpl.Funcs(
+		template.FuncMap{
+			"csrfField": func() template.HTML {
+				return `<input type="hidden" />`
+			},
+		},
+	)
+
+	htmlTpl, err := htmlTpl.ParseFS(fs, patterns...)
 	if err != nil {
 		return Template{}, fmt.Errorf("parsing template: %w", err)
 	}
+
 	return Template{
 		htmlTpl: htmlTpl,
 	}, nil
