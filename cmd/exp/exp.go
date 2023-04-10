@@ -1,7 +1,6 @@
 package main
 
 import (
-	"database/sql"
 	"fmt"
 
 	"github.com/sxc/oishifood/models"
@@ -34,15 +33,8 @@ func (cfg PostgresConfig) String() string {
 }
 
 func main() {
-	cfg := PostgresConfig{
-		Host:     "localhost",
-		Port:     "5432",
-		User:     "oishifooduser",
-		Password: "oishifoodpassword",
-		Database: "oishifooddb",
-		SSLMode:  "disable",
-	}
-	db, err := sql.Open("pgx", cfg.String())
+	cfg := models.DefaultPostgresConfig()
+	db, err := models.Open(cfg)
 	if err != nil {
 		panic(err)
 	}
@@ -57,7 +49,7 @@ func main() {
 	us := models.UserService{
 		DB: db,
 	}
-	user, err := us.Create("abcd@abcd.com", "abc123")
+	user, err := us.Create("abcd2@abcd.com", "abc123")
 	if err != nil {
 		panic(err)
 	}
