@@ -1,8 +1,10 @@
 package views
 
 import (
+	"bytes"
 	"fmt"
 	"html/template"
+	"io"
 	"io/fs"
 	"log"
 	"net/http"
@@ -24,8 +26,8 @@ func ParseFS(fs fs.FS, patterns ...string) (Template, error) {
 	htmlTpl := template.New(patterns[0])
 	htmlTpl = htmlTpl.Funcs(
 		template.FuncMap{
-			"csrfField": func() template.HTML {
-				return `<!-- TODO: Implement CSRF protection -->`
+			"csrfField": func() (template.HTML, error) {
+				return "", fmt.Errorf("csrfField not implemented")
 			},
 		},
 	)
@@ -61,13 +63,15 @@ func (t Template) Execute(w http.ResponseWriter, r *http.Request, data interface
 	)
 
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	err = tpl.Execute(w, data)
+	var buf bytes.Buffer
+	err = tpl.Execute(&buf, data)
 	// t.htmlTpl.Funcs()
 	if err != nil {
 		log.Printf("executing template: %v", err)
 		http.Error(w, "Internal server error executing the template.", http.StatusInternalServerError)
 		return
 	}
+	io.Copy(w, &buf)
 }
 
 func Must(t Template, err error) Template {
