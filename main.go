@@ -11,22 +11,7 @@ import (
 	"github.com/sxc/oishifood/views"
 
 	"github.com/gorilla/csrf"
-	// _ "github.com/jackc/pgx/v4/stdlib"
 )
-
-// type PostgresConfig struct {
-// 	Host     string
-// 	Port     string
-// 	User     string
-// 	Password string
-// 	Database string
-// 	SSLMode  string
-// }
-
-// func (cfg PostgresConfig) String() string {
-// 	return fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",
-// 		cfg.Host, cfg.Port, cfg.User, cfg.Password, cfg.Database, cfg.SSLMode)
-// }
 
 func main() {
 
@@ -39,6 +24,10 @@ func main() {
 	}
 	fmt.Println("Connected to database")
 	defer db.Close()
+
+	sessionService := models.SessionService{
+		DB: db,
+	}
 
 	err = db.Ping()
 	if err != nil {
@@ -60,7 +49,8 @@ func main() {
 		DB: db,
 	}
 	usersC := controllers.Users{
-		UserService: &userService,
+		UserService:    &userService,
+		SessionService: &sessionService,
 	}
 	usersC.Templates.New = views.Must(views.ParseFS(templates.FS,
 		"signup.gohtml", "tailwind.gohtml"))

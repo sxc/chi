@@ -54,13 +54,7 @@ func (u Users) Create(w http.ResponseWriter, r *http.Request) {
 	}
 	setCookie(w, CookieSession, session.Token)
 
-	// cookie := http.Cookie{
-	// 	Name:     "session",
-	// 	Value:    session.Token,
-	// 	Path:     "/",
-	// 	HttpOnly: true,
-	// }
-	http.SetCookie(w, cookie)
+	// http.SetCookie(w, cookie)
 	http.Redirect(w, r, "/users/me", http.StatusFound)
 	// fmt.Fprintf(w, "User created: %v", user)
 }
@@ -100,17 +94,8 @@ func (u Users) ProcessSignIn(w http.ResponseWriter, r *http.Request) {
 
 	// Add a cookie to the ResponseWriter
 	setCookie(w, CookieSession, session.Token)
-	// cookie := http.Cookie{
-	// 	Name:     "session",
-	// 	Value:    session.Token,
-	// 	Path:     "/",
-	// 	HttpOnly: true,
-	// }
-	// http.SetCookie(w, &cookie)
-	http.Redirect(w, r, "/users/me", http.StatusFound)
 
-	// fmt.Fprintf(w, "User authenticated: %v", user)
-	// u.Templates.SignIn.Execute(w, data)
+	http.Redirect(w, r, "/users/me", http.StatusFound)
 }
 
 func (u Users) CurrentUser(w http.ResponseWriter, r *http.Request) {
@@ -131,13 +116,8 @@ func (u Users) CurrentUser(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/signin", http.StatusFound)
 		return
 	}
-	fmt.Fprintf(w, "Current user: %s\n", user.Email)
+	fmt.Fprintf(w, "Current user: %s\n", user)
 
-	// email, err := r.Cookie("email")
-	// if err != nil {
-	// 	fmt.Fprint(w, "The email cookie could not be read.")
-	// 	return
-	// }
-	fmt.Fprintf(w, "The email cookie is set to: %s", email.Value)
-	fmt.Fprintf(w, "Headers: %+v\n", r.Header)
+	// fmt.Fprintf(w, "The email cookie is set to: %s", user)
+	// fmt.Fprintf(w, "Headers: %+v\n", r.Header)
 }
