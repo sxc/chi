@@ -52,13 +52,15 @@ func (u Users) Create(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/signin", http.StatusFound)
 		return
 	}
-	cookie := http.Cookie{
-		Name:     "session",
-		Value:    session.Token,
-		Path:     "/",
-		HttpOnly: true,
-	}
-	http.SetCookie(w, &cookie)
+	setCookie(w, CookieSession, session.Token)
+
+	// cookie := http.Cookie{
+	// 	Name:     "session",
+	// 	Value:    session.Token,
+	// 	Path:     "/",
+	// 	HttpOnly: true,
+	// }
+	http.SetCookie(w, cookie)
 	http.Redirect(w, r, "/users/me", http.StatusFound)
 	// fmt.Fprintf(w, "User created: %v", user)
 }
@@ -97,13 +99,14 @@ func (u Users) ProcessSignIn(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Add a cookie to the ResponseWriter
-	cookie := http.Cookie{
-		Name:     "session",
-		Value:    session.Token,
-		Path:     "/",
-		HttpOnly: true,
-	}
-	http.SetCookie(w, &cookie)
+	setCookie(w, CookieSession, session.Token)
+	// cookie := http.Cookie{
+	// 	Name:     "session",
+	// 	Value:    session.Token,
+	// 	Path:     "/",
+	// 	HttpOnly: true,
+	// }
+	// http.SetCookie(w, &cookie)
 	http.Redirect(w, r, "/users/me", http.StatusFound)
 
 	// fmt.Fprintf(w, "User authenticated: %v", user)
@@ -112,7 +115,9 @@ func (u Users) ProcessSignIn(w http.ResponseWriter, r *http.Request) {
 
 func (u Users) CurrentUser(w http.ResponseWriter, r *http.Request) {
 	// Get the session cookie
-	tokenCookie, err := r.Cookie("session")
+	// tokenCookie, err := r.Cookie("session")
+	token, err := readCookie(r, CookieSession)
+
 	if err != nil {
 		fmt.Println(err)
 		http.Redirect(w, r, "/signin", http.StatusFound)
@@ -120,7 +125,7 @@ func (u Users) CurrentUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get the user from the session token
-	user, err := u.SessionService.User(tokenCookie.Value)
+	user, err := u.SessionService.User(token)
 	if err != nil {
 		fmt.Println(err)
 		http.Redirect(w, r, "/signin", http.StatusFound)
