@@ -14,7 +14,8 @@ type Users struct {
 		New    Template
 		SignIn Template
 	}
-	UserService *models.UserService
+	UserService    *models.UserService
+	SessionService *models.SessionService
 }
 
 func (u Users) New(w http.ResponseWriter, r *http.Request) {
@@ -44,8 +45,22 @@ func (u Users) Create(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Something went wrong.", http.StatusInternalServerError)
 		return
 	}
-	fmt.Fprintf(w, "User created: %v", user)
-	// fmt.Fprint(w, "Create temporary response")
+	session, err := u.SessionService.Create(user.ID)
+	if err != nil {
+		fmt.Println(err)
+		// TODO: Handle error
+		http.Redirect(w, r, "/signin", http.StatusFound)
+		return
+	}
+	cookie := http.Cookie{
+		Name:     "session",
+		Value:    session.Token,
+		Path:     "/",
+		HttpOnly: true,
+	}
+	http.SetCookie(w, &cookie)
+	http.Redirect(w, r, "/users/me", http.StatusFound)
+	// fmt.Fprintf(w, "User created: %v", user)
 }
 
 func (u Users) SignIn(w http.ResponseWriter, r *http.Request) {
@@ -73,24 +88,51 @@ func (u Users) ProcessSignIn(w http.ResponseWriter, r *http.Request) {
 	// Add this code AFTER a user is successfully authenticated, but BEFORE the
 	// any writes to the ResponseWriter.
 	// Create a new session
+
+	session, err := u.SessionService.Create(user.ID)
+	if err != nil {
+		fmt.Println(err)
+		http.Error(w, "Something went wrong.", http.StatusInternalServerError)
+		return
+	}
+
+	// Add a cookie to the ResponseWriter
 	cookie := http.Cookie{
-		Name:     "email",
-		Value:    user.Email,
+		Name:     "session",
+		Value:    session.Token,
 		Path:     "/",
 		HttpOnly: true,
 	}
 	http.SetCookie(w, &cookie)
+	http.Redirect(w, r, "/users/me", http.StatusFound)
 
-	fmt.Fprintf(w, "User authenticated: %v", user)
+	// fmt.Fprintf(w, "User authenticated: %v", user)
 	// u.Templates.SignIn.Execute(w, data)
 }
 
 func (u Users) CurrentUser(w http.ResponseWriter, r *http.Request) {
-	email, err := r.Cookie("email")
+	// Get the session cookie
+	tokenCookie, err := r.Cookie("session")
 	if err != nil {
-		fmt.Fprint(w, "The email cookie could not be read.")
+		fmt.Println(err)
+		http.Redirect(w, r, "/signin", http.StatusFound)
 		return
 	}
+
+	// Get the user from the session token
+	user, err := u.SessionService.User(tokenCookie.Value)
+	if err != nil {
+		fmt.Println(err)
+		http.Redirect(w, r, "/signin", http.StatusFound)
+		return
+	}
+	fmt.Fprintf(w, "Current user: %s\n", user.Email)
+
+	// email, err := r.Cookie("email")
+	// if err != nil {
+	// 	fmt.Fprint(w, "The email cookie could not be read.")
+	// 	return
+	// }
 	fmt.Fprintf(w, "The email cookie is set to: %s", email.Value)
 	fmt.Fprintf(w, "Headers: %+v\n", r.Header)
 }

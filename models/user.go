@@ -18,31 +18,13 @@ type UserService struct {
 	DB *sql.DB
 }
 
-// type NewUser struct {
-// 	Email    string
-// 	Password string
-// }
-
-// func (us *UserService) Create(nu NewUser) (*User, error) {
-
-// 	// TODO: Implement this method
-// }
-
-// func CreateUser(db *sql.DB, email, password string) (*User, error) {
-// 	// Create and return a new user using 'db'
-// }
-
 func (us *UserService) Create(email, password string) (*User, error) {
 	email = strings.ToLower(email)
 	hashedBytes, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
 		return nil, fmt.Errorf("create user: %w", err)
-
 	}
-	// fmt.Println(string(hashedBytes))
-
 	passwordHash := string(hashedBytes)
-
 	user := User{
 		Email:        email,
 		PasswordHash: passwordHash,
