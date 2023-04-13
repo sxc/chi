@@ -41,11 +41,24 @@ func (ss *SessionService) Create(userID int) (*Session, error) {
 		return nil, fmt.Errorf("create: %w", err)
 	}
 	session := Session{
-		UserID: userID,
-		Token:  token,
+		UserID:    userID,
+		Token:     token,
+		TokenHash: ss.hash(token),
+
 		// TODO: Hash the token
 
 	}
+	// Store the session in the database
+	row := ss.DB.QueryRow(`
+	insert into sessions (user_id, token_hash) 
+    values ($1, $2)
+    returning id;
+	`, session.UserID, session.TokenHash)
+	err = row.Scan(&session.ID)
+	if err != nil {
+		return nil, fmt.Errorf("create: %w", err)
+	}
+
 	// Implement this function
 	// return &session, nil
 	return &session, nil
@@ -59,3 +72,7 @@ func (ss *SessionService) hash(token string) string {
 	tokenHash := sha256.Sum256([]byte(token))
 	return base64.URLEncoding.EncodeToString(tokenHash[:])
 }
+
+// type TokenManager struct { }
+
+// func (tm TokenManager)
