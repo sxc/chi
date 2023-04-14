@@ -6,6 +6,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/sxc/oishifood/controllers"
+	"github.com/sxc/oishifood/migrations"
 	"github.com/sxc/oishifood/models"
 	"github.com/sxc/oishifood/templates"
 	"github.com/sxc/oishifood/views"
@@ -26,7 +27,7 @@ func main() {
 	fmt.Println("Connected to database")
 	defer db.Close()
 
-	err = models.Migrate(db, "migrations")
+	err = models.MigrateFS(db, migrations.FS, ".")
 	if err != nil {
 		panic(err)
 	}
