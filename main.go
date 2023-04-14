@@ -26,6 +26,11 @@ func main() {
 	fmt.Println("Connected to database")
 	defer db.Close()
 
+	err = models.Migrate(db, "migrations")
+	if err != nil {
+		panic(err)
+	}
+
 	sessionService := models.SessionService{
 		DB: db,
 	}
