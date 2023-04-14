@@ -17,6 +17,7 @@ func main() {
 
 	// Setup the database...
 	cfg := models.DefaultPostgresConfig()
+	fmt.Println(cfg.String())
 	db, err := models.Open(cfg)
 
 	if err != nil {
