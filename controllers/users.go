@@ -121,3 +121,36 @@ func (u Users) CurrentUser(w http.ResponseWriter, r *http.Request) {
 	// fmt.Fprintf(w, "The email cookie is set to: %s", user)
 	// fmt.Fprintf(w, "Headers: %+v\n", r.Header)
 }
+
+func (u Users) ProcessSignOut(w http.ResponseWriter, r *http.Request) {
+	// Get the session cookie
+	// tokenCookie, err := r.Cookie("session")
+	token, err := readCookie(r, CookieSession)
+
+	if err != nil {
+		fmt.Println(err)
+		http.Redirect(w, r, "/signin", http.StatusFound)
+		return
+	}
+
+	// // Get the user from the session token
+	// tok, err := u.SessionService.User(token)
+	// if err != nil {
+	// 	fmt.Println(err)
+	// 	http.Redirect(w, r, "/signin", http.StatusFound)
+	// 	return
+	// }
+
+	// Delete the session
+	err = u.SessionService.Delete(token)
+	if err != nil {
+		fmt.Println(err)
+		http.Error(w, "Something went wrong.", http.StatusInternalServerError)
+		return
+	}
+
+	// Delete the cookie
+	// setCookie(w, CookieSession, "")
+	deleteCookie(w, CookieSession)
+	http.Redirect(w, r, "/signin", http.StatusFound)
+}
