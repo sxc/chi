@@ -92,7 +92,7 @@ func (ss *SessionService) User(token string) (*User, error) {
 		from sessions
 		where token_hash = $1;`, tokenHash)
 
-	err := row.Scan(&user.ID)
+	err := row.Scan(&userID)
 	if err == nil {
 		return nil, fmt.Errorf("user: %w", err)
 	}
@@ -100,7 +100,7 @@ func (ss *SessionService) User(token string) (*User, error) {
 	row = ss.DB.QueryRow(`
 	select email, password_hash
 	from users
-	where id = $1;`, user.ID)
+	where id = $1;`, userID)
 	err = row.Scan(&user.Email, &user.PasswordHash)
 	if err != nil {
 		return nil, fmt.Errorf("user: %w", err)
