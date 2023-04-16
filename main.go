@@ -10,8 +10,6 @@ import (
 	"github.com/sxc/oishifood/models"
 	"github.com/sxc/oishifood/templates"
 	"github.com/sxc/oishifood/views"
-
-	"github.com/gorilla/csrf"
 )
 
 func main() {
@@ -41,7 +39,15 @@ func main() {
 		panic(err)
 	}
 
+	// Setup the routes...
+
 	r := chi.NewRouter()
+
+	// These middleware are used for every request
+
+	r.Use(csrfMw)
+	r.Use(umw.SetUser)
+	// now we setup routes
 
 	r.Get("/", controllers.StaticHandler(
 		views.Must(views.ParseFS(templates.FS, "home.gohtml", "tailwind.gohtml"))))
@@ -70,7 +76,10 @@ func main() {
 	r.Get("/signin", usersC.SignIn)
 	r.Post("/signin", usersC.ProcessSignIn)
 	r.Post("/signout", usersC.ProcessSignOut)
-	r.Get("/users/me", usersC.CurrentUser)
+	r.Get("/users/me", func(r chi.Router) {
+		r.Use(umw.RequireUser)
+		r.Get("/", usersC.CurrentUser)
+	})
 
 	// defer db.Close()
 
@@ -86,8 +95,8 @@ func main() {
 
 	csrfKey := []byte("very-secret")
 	// TODO: Fix this before deploying to production
-	csrfMw := csrf.Protect(csrfKey, csrf.Secure(false))
+	// csrfMw := csrf.Protect(csrfKey, csrf.Secure(false))
 	// r.Use(csrfMiddleware)
 	// http.ListenAndServe(":3000", csrfMiddleware(r))
-	http.ListenAndServe(":3000", csrfMw(umw.SetUser(r)))
+	http.ListenAndServe(":3000", r)
 }
