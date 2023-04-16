@@ -77,11 +77,17 @@ func main() {
 	r.NotFound(func(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "404 Page Not Found not found", http.StatusNotFound)
 	})
+
+	umw := controllers.UserMiddleware{
+		SessionService: &sessionService,
+	}
+
 	fmt.Println("Server is running on port 3000")
 
 	csrfKey := []byte("very-secret")
 	// TODO: Fix this before deploying to production
-	csrfMiddleware := csrf.Protect(csrfKey, csrf.Secure(false))
+	csrfMw := csrf.Protect(csrfKey, csrf.Secure(false))
 	// r.Use(csrfMiddleware)
-	http.ListenAndServe(":3000", csrfMiddleware(r))
+	// http.ListenAndServe(":3000", csrfMiddleware(r))
+	http.ListenAndServe(":3000", csrfMw(umw.SetUser(r)))
 }

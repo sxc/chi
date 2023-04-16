@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/csrf"
+	"github.com/sxc/oishifood/context"
 	"github.com/sxc/oishifood/models"
 )
 
@@ -99,28 +100,41 @@ func (u Users) ProcessSignIn(w http.ResponseWriter, r *http.Request) {
 }
 
 func (u Users) CurrentUser(w http.ResponseWriter, r *http.Request) {
-	// Get the session cookie
-	// tokenCookie, err := r.Cookie("session")
-	token, err := readCookie(r, CookieSession)
-
-	if err != nil {
-		fmt.Println(err)
-		http.Redirect(w, r, "/signin", http.StatusFound)
-		return
-	}
-
-	// Get the user from the session token
-	user, err := u.SessionService.User(token)
-	if err != nil {
-		fmt.Println(err)
-		http.Redirect(w, r, "/signin", http.StatusFound)
-		return
-	}
-	fmt.Fprintf(w, "Current user: %s\n", user)
-
-	// fmt.Fprintf(w, "The email cookie is set to: %s", user)
-	// fmt.Fprintf(w, "Headers: %+v\n", r.Header)
+	user := context.User(r.Context())
+	fmt.Fprintf(w, "Current user: %s\n", user.Email)
 }
+
+// func (u Users) CurrentUser(w http.ResponseWriter, r *http.Request) {
+// 	user := context.User(r.Context())
+
+// 	if user == nil {
+// 		http.Redirect(w, r, "/signin", http.StatusFound)
+// 		return
+// 	}
+// 	fmt.Fprintf(w, "Current user: %s\n", user.Email)
+
+// Get the session cookie
+// tokenCookie, err := r.Cookie("session")
+// token, err := readCookie(r, CookieSession)
+
+// if err != nil {
+// 	fmt.Println(err)
+// 	http.Redirect(w, r, "/signin", http.StatusFound)
+// 	return
+// }
+
+// // Get the user from the session token
+// user, err := u.SessionService.User(token)
+// if err != nil {
+// 	fmt.Println(err)
+// 	http.Redirect(w, r, "/signin", http.StatusFound)
+// 	return
+// }
+// fmt.Fprintf(w, "Current user: %s\n", user)
+
+// fmt.Fprintf(w, "The email cookie is set to: %s", user)
+// fmt.Fprintf(w, "Headers: %+v\n", r.Header)
+// }
 
 func (u Users) ProcessSignOut(w http.ResponseWriter, r *http.Request) {
 	// Get the session cookie
@@ -153,4 +167,30 @@ func (u Users) ProcessSignOut(w http.ResponseWriter, r *http.Request) {
 	// setCookie(w, CookieSession, "")
 	deleteCookie(w, CookieSession)
 	http.Redirect(w, r, "/signin", http.StatusFound)
+}
+
+type UserMiddleware struct {
+	SessionService *models.SessionService
+}
+
+func (umw UserMiddleware) SetUser(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// Get the session cookie
+		token, err := readCookie(r, CookieSession)
+		if err != nil {
+			next.ServeHTTP(w, r)
+			return
+		}
+
+		// Get the user from the session token
+		user, err := umw.SessionService.User(token)
+		if err != nil {
+			next.ServeHTTP(w, r)
+			return
+		}
+
+		// Add the user to the request context
+		ctx := context.WithUser(r.Context(), user)
+		next.ServeHTTP(w, r.WithContext(ctx))
+	})
 }
